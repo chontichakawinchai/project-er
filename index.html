@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ER Project</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f8f4ff;color:#1a1a2e;font-size:16px}
+.header{text-align:center;padding:1.2rem 1rem 0.5rem;background:#fff;border-bottom:2px solid #e9e0f8}
+.header-title{font-size:22px;font-weight:700;color:#6c3fc4}
+.header-sub{font-size:13px;color:#8b6ab0;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;background:#ccc;display:inline-block;flex-shrink:0}
+.nav{display:flex;gap:6px;padding:0.75rem;background:#fff;border-bottom:2px solid #e9e0f8;position:sticky;top:0;z-index:10}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px 8px;border:2px solid transparent;border-radius:16px;cursor:pointer;font-size:11px;font-weight:700;color:#fff;font-family:'Sarabun',sans-serif;transition:all 0.15s}
+.nav-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;background:rgba(255,255,255,0.25)}
+.n1{background:#a855f7}.n1.on{border-color:#fff;box-shadow:0 4px 12px rgba(168,85,247,0.4)}
+.n2{background:#3b82f6}.n2.on{border-color:#fff;box-shadow:0 4px 12px rgba(59,130,246,0.4)}
+.n3{background:#10b981}.n3.on{border-color:#fff;box-shadow:0 4px 12px rgba(16,185,129,0.4)}
+.n4{background:#f59e0b}.n4.on{border-color:#fff;box-shadow:0 4px 12px rgba(245,158,11,0.4)}
+.main{padding:1rem;max-width:600px;margin:0 auto}
+.sec{display:none}.sec.on{display:block}
+.card{background:#fff;border:2px solid #e9e0f8;border-radius:18px;padding:1rem;margin-bottom:12px}
+.card-title{font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ct-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.field{margin-bottom:10px}
+.field label{font-size:12px;font-weight:700;display:block;margin-bottom:4px}
+.field input,.field select{width:100%;font-size:14px;font-weight:600;border:2px solid #e9e0f8;border-radius:12px;padding:8px 12px;background:#faf8ff;color:#1a1a2e;font-family:'Sarabun',sans-serif}
+.filter-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.filter-btn{border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;border:2px solid transparent;font-family:'Sarabun',sans-serif;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.filter-icon{font-size:24px}
+.filter-label{font-size:15px;font-weight:700}
+.filter-count{font-size:13px;font-weight:600;opacity:0.8}
+.badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:700;white-space:nowrap}
+.bd-overdue{background:#ff3b30;color:#fff}
+.bd-yellow{background:#fff0c2;color:#92400e}
+.bd-green{background:#d1fae5;color:#065f46}
+.bd-gray{background:#f0f0f0;color:#666}
+.bd-purple{background:#ede0ff;color:#5b21b6}
+.bd-warn{background:#fef3c7;color:#92400e}
+.task-card{background:#fff;border:2px solid #c7d2fe;border-left:4px solid #6366f1;border-radius:14px;padding:12px;margin-bottom:8px}
+.task-top{display:flex;align-items:flex-start;gap:10px}
+.task-cb{margin-top:3px;width:18px;height:18px;flex-shrink:0;cursor:pointer}
+.task-body{flex:1;min-width:0}
+.task-name{font-size:14px;font-weight:700;color:#1a1a2e;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.task-name.done{text-decoration:line-through;color:#aaa;font-weight:400}
+.task-meta{font-size:12px;font-weight:600;color:#8b6ab0;margin-top:4px}
+.task-acts{display:flex;gap:5px;flex-shrink:0}
+.icon-btn{padding:7px 9px;font-size:16px;border:2px solid #e9e0f8;border-radius:12px;background:#fff;cursor:pointer;display:flex;align-items:center}
+.members{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.chip{display:flex;align-items:center;gap:5px;background:#ede0ff;border:2px solid #c4b5fd;border-radius:20px;padding:4px 10px 4px 12px;font-size:13px;font-weight:700;color:#5b21b6}
+.chip button{background:none;border:none;cursor:pointer;color:#a855f7;font-size:18px;line-height:1;padding:0}
+.preview-bubble{background:#06C755;color:#fff;border-radius:16px 16px 16px 3px;padding:12px 15px;font-size:13px;font-weight:600;line-height:1.7;white-space:pre-wrap;word-break:break-word;max-width:92%;margin:8px 0}
+.chat-wrap{background:#ddd;border-radius:16px;padding:16px}
+.chat-from{font-size:11px;font-weight:700;color:#555;margin-bottom:4px}
+.result-box{border-radius:14px;padding:12px 14px;font-size:14px;font-weight:700;margin-top:10px;display:none}
+.btn{padding:9px 18px;font-size:14px;font-weight:700;cursor:pointer;border-radius:12px;font-family:'Sarabun',sans-serif;display:inline-flex;align-items:center;gap:6px;border:2px solid}
+.btn-purple{background:#8b5cf6;border-color:#6c3fc4;color:#fff}
+.btn-green{background:#10b981;border-color:#059669;color:#fff}
+.btn-line{background:#06C755;border-color:#058c3a;color:#fff}
+.btn-outline{background:#fff;border-color:#e9e0f8;color:#1a1a2e}
+.btn-danger{background:#fff;border-color:#fca5a5;color:#dc2626}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:10px}
+.tip{font-size:12px;font-weight:600;color:#8b6ab0;display:flex;gap:5px;line-height:1.5}
+.empty{color:#8b6ab0;font-size:14px;font-weight:600;padding:20px 4px;text-align:center}
+.task-sel{background:#fff;border:2px solid #e9e0f8;border-radius:14px;padding:12px;margin-bottom:8px;cursor:pointer;display:flex;align-items:flex-start;gap:10px;transition:all 0.15s}
+.task-sel.on{border-color:#10b981;background:#f0fdf4}
+.sel-box{width:24px;height:24px;border-radius:8px;border:2px solid #e9e0f8;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;margin-top:1px;background:#faf8ff}
+.task-sel.on .sel-box{background:#10b981;border-color:#10b981;color:#fff}
+.sel-bar{background:#f0fdf4;border:2px solid #a7f3d0;border-radius:14px;padding:10px 14px;margin-bottom:12px;display:none;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.sel-count{font-size:13px;font-weight:700;color:#065f46}
+.loading{text-align:center;padding:20px;color:#8b6ab0;font-size:14px;font-weight:600}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-title">🏥 ER Project</div>
+  <div class="header-sub"><span class="dot" id="dot"></span><span id="stxt">ยังไม่ได้ตั้งค่า LINE</span></div>
+</div>
+<div class="nav">
+  <button class="nav-btn n1 on" onclick="goTab('tasks',this)"><div class="nav-icon">📚</div><span>งาน</span></button>
+  <button class="nav-btn n2" onclick="goTab('members',this)"><div class="nav-icon">👥</div><span>สมาชิก</span></button>
+  <button class="nav-btn n3" onclick="goTab('notify',this)"><div class="nav-icon">💬</div><span>LINE</span></button>
+  <button class="nav-btn n4" onclick="goTab('settings',this)"><div class="nav-icon">⚙️</div><span>ตั้งค่า</span></button>
+</div>
+<div class="main">
+
+<div id="s-tasks" class="sec on">
+  <div class="card" style="border-color:#bbf7d0;border-left:5px solid #10b981">
+    <div class="card-title"><div class="ct-icon" style="background:#d1fae5">✨</div><span style="color:#065f46">เพิ่มงานใหม่</span></div>
+    <div class="field"><label style="color:#059669">ชื่องาน</label><input id="nt-name" type="text" placeholder="เช่น รายงานประจำเดือน" style="border-color:#bbf7d0;background:#f0fdf4"/></div>
+    <div class="field"><label style="color:#059669">มอบหมายให้</label>
+      <div style="display:flex;gap:6px;margin-bottom:6px">
+        <button type="button" onclick="assignAll()" style="padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;border-radius:10px;border:2px solid #bbf7d0;background:#f0fdf4;color:#065f46;font-family:'Sarabun',sans-serif">✔ ทุกคน</button>
+        <button type="button" onclick="assignNone()" style="padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;border-radius:10px;border:2px solid #e9e0f8;background:#fff;color:#8b6ab0;font-family:'Sarabun',sans-serif">✕ ล้าง</button>
+      </div>
+      <div id="nt-assign-list" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:2px solid #bbf7d0;border-radius:12px;background:#f0fdf4;min-height:40px"></div>
+    </div>
+    <div class="field"><label style="color:#059669">วันส่ง</label><input id="nt-date" type="date" style="border-color:#bbf7d0;background:#f0fdf4"/></div>
+    <div class="field"><label style="color:#059669">สถานะ</label>
+      <select id="nt-status" style="border-color:#bbf7d0;background:#f0fdf4">
+        <option value="pending">⏳ รอดำเนินการ</option>
+        <option value="inprogress">⛏️ กำลังดำเนินการ</option>
+        <option value="needfix">⚠️ ต้องแก้ไข</option>
+      </select>
+    </div>
+    <div class="field"><label style="color:#059669">หมายเหตุ</label><input id="nt-note" type="text" placeholder="รายละเอียดเพิ่มเติม" style="border-color:#bbf7d0;background:#f0fdf4"/></div>
+    <div class="btn-row"><button class="btn btn-green" onclick="addTask()">➕ เพิ่มงาน</button></div>
+  </div>
+  <div class="filter-grid" id="filter-grid">
+    <div class="filter-btn" id="f-all" onclick="filterTasks('all')" style="background:#fce4ec;border-color:#f48fb1"><div><div class="filter-icon">📚</div><div class="filter-label" style="color:#ad1457">ทั้งหมด</div><div class="filter-count" style="color:#e91e8c" id="fc-all">0 งาน</div></div></div>
+    <div class="filter-btn" id="f-overdue" onclick="filterTasks('overdue')" style="background:#fff5f5;border-color:#fecaca"><div><div class="filter-icon">🔥</div><div class="filter-label" style="color:#dc2626">เกินกำหนด!</div><div class="filter-count" style="color:#ef4444" id="fc-overdue">0 งาน</div></div></div>
+    <div class="filter-btn" id="f-pending" onclick="filterTasks('pending')" style="background:#e0e7ff;border-color:#c7d2fe"><div><div class="filter-icon">⏳</div><div class="filter-label" style="color:#3730a3">รอดำเนินการ</div><div class="filter-count" style="color:#4f46e5" id="fc-pending">0 งาน</div></div></div>
+    <div class="filter-btn" id="f-inprogress" onclick="filterTasks('inprogress')" style="background:#f5edff;border-color:#c4b5fd"><div><div class="filter-icon">⛏️</div><div class="filter-label" style="color:#5b21b6">กำลังดำเนินการ</div><div class="filter-count" style="color:#7c3aed" id="fc-inprogress">0 งาน</div></div></div>
+    <div class="filter-btn" id="f-needfix" onclick="filterTasks('needfix')" style="background:#fffbeb;border-color:#fde68a"><div><div class="filter-icon">⚠️</div><div class="filter-label" style="color:#92400e">ต้องแก้ไข</div><div class="filter-count" style="color:#b45309" id="fc-needfix">0 งาน</div></div></div>
+    <div class="filter-btn" id="f-done" onclick="filterTasks('done')" style="background:#f0fdf4;border-color:#a7f3d0"><div><div class="filter-icon">✅</div><div class="filter-label" style="color:#065f46">เสร็จแล้ว</div><div class="filter-count" style="color:#059669" id="fc-done">0 งาน</div></div></div>
+  </div>
+  <div class="card" style="border-color:#c7d2fe;border-left:5px solid #6366f1">
+    <div class="card-title"><div class="ct-icon" style="background:#e0e7ff">📝</div><span style="color:#3730a3" id="list-title">รายการงานทั้งหมด</span></div>
+    <div id="task-list"><div class="loading">⏳ กำลังโหลดข้อมูล...</div></div>
+  </div>
+</div>
+
+<div id="s-members" class="sec">
+  <div class="card" style="border-color:#bfdbfe;border-left:5px solid #3b82f6">
+    <div class="card-title"><div class="ct-icon" style="background:#dbeafe">👤</div><span style="color:#1e3a8a">สมาชิกกลุ่ม LINE</span></div>
+    <div style="display:flex;gap:8px;margin-bottom:4px">
+      <input id="nm-name" type="text" placeholder="ชื่อสมาชิก" style="flex:1;font-size:14px;font-weight:600;border:2px solid #bfdbfe;border-radius:12px;padding:8px 12px;background:#eff6ff;color:#1a1a2e;font-family:'Sarabun',sans-serif"/>
+      <button class="btn btn-outline" onclick="addMember()" style="border-color:#3b82f6;color:#1d4ed8">➕ เพิ่ม</button>
+    </div>
+    <div class="members" id="member-list"></div>
+  </div>
+  <div class="tip">ℹ️ ใส่ชื่อตามที่ใช้ใน LINE เพื่อให้ @mention ได้ถูกต้องนะคะ</div>
+</div>
+
+<div id="s-notify" class="sec">
+  <div class="card" style="border-color:#a7f3d0;border-left:5px solid #10b981">
+    <div class="card-title"><div class="ct-icon" style="background:#d1fae5">☑️</div><span style="color:#065f46">เลือกงานที่จะแจ้งเตือน</span></div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button onclick="selectAll()" style="padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;border-radius:10px;border:2px solid #a7f3d0;background:#f0fdf4;color:#065f46;font-family:'Sarabun',sans-serif">✔ เลือกทั้งหมด</button>
+      <button onclick="selectNone()" style="padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;border-radius:10px;border:2px solid #e9e0f8;background:#fff;color:#8b6ab0;font-family:'Sarabun',sans-serif">✕ ยกเลิกทั้งหมด</button>
+    </div>
+    <div id="sel-list"></div>
+  </div>
+  <div class="sel-bar" id="sel-bar">
+    <div class="sel-count" id="sel-count">เลือกแล้ว 0 งาน</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button onclick="previewSel()" style="padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px;border:2px solid #a7f3d0;background:#fff;color:#065f46;font-family:'Sarabun',sans-serif">👁 ดูตัวอย่าง</button>
+      <button class="btn btn-line" onclick="sendSel()">💬 ส่งงานที่เลือก</button>
+    </div>
+  </div>
+  <div id="extra-row" style="display:none;margin-bottom:12px">
+    <div style="font-size:12px;font-weight:700;color:#8b6ab0;margin-bottom:5px">ข้อความเพิ่มเติม</div>
+    <input id="nn-extra" type="text" placeholder="เช่น กรุณาส่งก่อน 5 โมงนะคะ" style="width:100%;font-size:14px;font-weight:600;border:2px solid #a7f3d0;border-radius:12px;padding:8px 12px;background:#f0fdf4;color:#1a1a2e;font-family:'Sarabun',sans-serif"/>
+  </div>
+  <div id="preview-area" style="display:none;margin-bottom:12px">
+    <div style="font-size:12px;font-weight:700;color:#8b6ab0;margin-bottom:6px">ตัวอย่างข้อความ:</div>
+    <div class="chat-wrap"><div class="chat-from">บอท 🤖</div><div class="preview-bubble" id="p-msg"></div></div>
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <button class="btn btn-line" onclick="sendSel()">💬 ส่งเลย</button>
+      <button class="btn btn-outline" onclick="copyMsg()">📋 คัดลอก</button>
+    </div>
+  </div>
+  <div class="result-box" id="notify-result"></div>
+</div>
+
+<div id="s-settings" class="sec">
+  <div class="card" style="border-color:#c4b5fd;border-left:5px solid #8b5cf6">
+    <div class="card-title"><div class="ct-icon" style="background:#ede0ff">🔗</div><span style="color:#4c1d95">ตั้งค่า LINE Bot</span></div>
+    <div style="background:#f5edff;border-radius:10px;padding:8px 12px;margin-bottom:12px;font-size:12px;font-weight:700;color:#6c3fc4">🔒 Token เก็บในเครื่องนี้เท่านั้นค่ะ</div>
+    <div class="field">
+      <label style="color:#6c3fc4">Channel Access Token</label>
+      <div style="display:flex;gap:8px">
+        <input type="password" id="cfg-token" placeholder="วาง Token ที่นี่" style="flex:1;border-color:#c4b5fd;background:#f5edff"/>
+        <button onclick="toggleShow('cfg-token',this)" class="btn btn-outline" style="border-color:#c4b5fd;color:#6c3fc4;padding:8px 12px">👁</button>
+      </div>
+    </div>
+    <div class="field"><label style="color:#6c3fc4">Group ID</label><input type="text" id="cfg-groupid" style="border-color:#c4b5fd;background:#f5edff"/></div>
+    <div class="field"><label style="color:#6c3fc4">Google Apps Script URL</label><input type="text" id="cfg-gasurl" style="border-color:#c4b5fd;background:#f5edff"/></div>
+    <div class="btn-row">
+      <button class="btn btn-purple" onclick="saveCfg()">💾 บันทึก</button>
+      <button class="btn btn-line" onclick="testSend()">📤 ทดสอบส่ง</button>
+    </div>
+    <div class="result-box" id="test-result"></div>
+  </div>
+  <div class="card" style="border-color:#fde68a;border-left:5px solid #f59e0b">
+    <div class="card-title"><div class="ct-icon" style="background:#fef3c7">⚙️</div><span style="color:#92400e">ตั้งค่าทั่วไป</span></div>
+    <div class="field"><label style="color:#d97706">ชื่อกลุ่ม</label><input id="cfg-group" type="text" placeholder="เช่น ทีมงาน ER" style="border-color:#fde68a;background:#fffbeb"/></div>
+    <div class="field"><label style="color:#d97706">เตือนล่วงหน้า</label>
+      <select id="cfg-warn" style="border-color:#fde68a;background:#fffbeb">
+        <option value="1">1 วัน</option><option value="2" selected>2 วัน</option>
+        <option value="3">3 วัน</option><option value="7">7 วัน</option>
+      </select>
+    </div>
+    <div class="field"><label style="color:#d97706">สไตล์ข้อความ</label>
+      <select id="cfg-tmpl" style="border-color:#fde68a;background:#fffbeb">
+        <option value="casual" selected>สบายๆ น่ารัก</option>
+        <option value="formal">ทางการ</option>
+        <option value="strict">เข้มงวด</option>
+      </select>
+    </div>
+    <div style="border-top:2px solid #fde68a;margin:12px 0"></div>
+    <div class="btn-row"><button class="btn btn-danger" onclick="clearAll()">🗑 ล้างข้อมูลทั้งหมด</button></div>
+  </div>
+</div>
+
+</div>
+<script>
+const DEFAULT_GAS='/api/webhook';
+
+let cfg=JSON.parse(localStorage.getItem('er_cfg')||'{}');
+const _urlP=new URLSearchParams(location.search);
+if(_urlP.get('groupId'))cfg.groupId=_urlP.get('groupId');
+if(_urlP.get('token'))cfg.token=_urlP.get('token');
+if(_urlP.get('gasUrl'))cfg.gasUrl=_urlP.get('gasUrl');
+
+let members=[];
+let tasks=[];
+let nid=parseInt(localStorage.getItem('er_nid')||'1');
+let sel=new Set();
+let currentFilter='all';
+const filterCfg={all:{bg:'#fce4ec',border:'#f48fb1',title:'รายการงานทั้งหมด'},overdue:{bg:'#fff5f5',border:'#fecaca',title:'🔥 งานเกินกำหนด'},pending:{bg:'#e0e7ff',border:'#c7d2fe',title:'⏳ งานรอดำเนินการ'},inprogress:{bg:'#f5edff',border:'#c4b5fd',title:'⛏️ กำลังดำเนินการ'},needfix:{bg:'#fffbeb',border:'#fde68a',title:'⚠️ ต้องแก้ไข'},done:{bg:'#f0fdf4',border:'#a7f3d0',title:'✅ งานเสร็จแล้ว'}};
+
+function gasUrl(){return cfg.gasUrl||DEFAULT_GAS;}
+
+async function gasPost(params) {
+  try {
+    const r = await fetch(gasUrl(), {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(params)
+    });
+    const data = await r.json().catch(() => ({ok: true}));
+    return data;
+  } catch(e) {
+    console.error('gasPost error:', e);
+    return {ok: false};
+  }
+}
+
+async function gasGet(params) {
+  try {
+    const u = gasUrl() + '?' + new URLSearchParams(params).toString();
+    const r = await fetch(u);
+    return await r.json();
+  } catch(e) {
+    console.error('gasGet error:', e);
+    return {ok: false};
+  }
+}
+
+async function loadAll(){
+  await loadMembers();
+  await loadTasks();
+}
+async function loadMembers(){
+  const r=await gasGet({action:'getMembers',t:Date.now()});
+  if(r.ok&&r.members){
+    members=r.members.map(m=>m.name);
+    cfg.memberMap={};
+    r.members.forEach(m=>{cfg.memberMap[m.name]=m.userId;});
+  }
+  renderMembers();
+}
+async function loadTasks(){
+  const r=await gasGet({action:'getTasks',t:Date.now()});
+  if(r.ok&&r.tasks){
+    tasks=r.tasks.map(t=>({...t,id:parseInt(t.id)}));
+    if(tasks.length>0)nid=Math.max(...tasks.map(t=>t.id))+1;
+  }
+  renderTasks();
+}
+
+function saveNid(){localStorage.setItem('er_nid',nid);}
+function saveCfgLocal(){localStorage.setItem('er_cfg',JSON.stringify(cfg));}
+
+function df(n){let d=new Date();d.setDate(d.getDate()+n);return d.toISOString().split('T')[0]}
+function fmt(s){let d=new Date(s);return d.getDate()+'/'+(d.getMonth()+1)+'/'+(d.getFullYear()+543)}
+function st(date,done){
+  if(done)return{lbl:'เสร็จแล้ว',cls:'bd-gray',bc:'#e5e7eb',bl:'#9ca3af'};
+  const t=new Date();t.setHours(0,0,0,0);const due=new Date(date);const diff=Math.round((due-t)/86400000);
+  const w=parseInt(document.getElementById('cfg-warn').value)||2;
+  if(diff<0)return{lbl:'🔥 เกิน '+Math.abs(diff)+' วัน!',cls:'bd-overdue',bc:'#fecaca',bl:'#ef4444'};
+  if(diff===0)return{lbl:'🔥 วันนี้!',cls:'bd-overdue',bc:'#fecaca',bl:'#ef4444'};
+  if(diff<=w)return{lbl:'⏰ อีก '+diff+' วัน',cls:'bd-yellow',bc:'#fde68a',bl:'#f59e0b'};
+  return{lbl:'✓ อีก '+diff+' วัน',cls:'bd-green',bc:'#bbf7d0',bl:'#10b981'};
+}
+function statusLabel(s){if(s==='inprogress')return' <span class="badge bd-purple">⛏️ กำลังดำเนินการ</span>';if(s==='needfix')return' <span class="badge bd-warn">⚠️ ต้องแก้ไข</span>';return'';}
+function updStatus(){const d=document.getElementById('dot'),t=document.getElementById('stxt');if(cfg.token&&cfg.groupId){d.style.background='#06C755';t.textContent='เชื่อมต่อ LINE แล้ว ✓';t.style.color='#065f46';}else{d.style.background='#ccc';t.textContent='ยังไม่ได้ตั้งค่า LINE';t.style.color='#8b6ab0';}}
+function goTab(id,btn){document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));document.getElementById('s-'+id).classList.add('on');btn.classList.add('on');if(id==='notify')renderSel();if(id==='settings'){document.getElementById('cfg-token').value=cfg.token||'';document.getElementById('cfg-groupid').value=cfg.groupId||'';document.getElementById('cfg-gasurl').value=cfg.gasUrl||DEFAULT_GAS;document.getElementById('cfg-group').value=cfg.groupName||'';}}
+function renderMembers(){
+  document.getElementById('member-list').innerHTML=members.map((m,i)=>'<div class="chip">'+m+'<button onclick="rmM(\''+m+'\')" aria-label="ลบ">x</button></div>').join('');
+  renderAssignList();
+}
+function renderAssignList(){
+  const el=document.getElementById('nt-assign-list');
+  if(!el)return;
+  el.innerHTML=members.map(m=>{
+    const on=selectedAssign.has(m);
+    return '<div onclick="toggleAssign(\''+m+'\');" style="padding:5px 12px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:700;border:2px solid '+(on?'#10b981':'#e9e0f8')+';background:'+(on?'#10b981':'#fff')+';color:'+(on?'#fff':'#1a1a2e')+';">'+m+'</div>';
+  }).join('');
+}
+const selectedAssign=new Set();
+function toggleAssign(name){if(selectedAssign.has(name))selectedAssign.delete(name);else selectedAssign.add(name);renderAssignList();}
+function assignAll(){members.forEach(m=>selectedAssign.add(m));renderAssignList();}
+function assignNone(){selectedAssign.clear();renderAssignList();}
+
+async function addMember(){
+  const v=document.getElementById('nm-name').value.trim();
+  if(!v||members.includes(v))return;
+  await gasPost({action:'addMember',name:v});
+  document.getElementById('nm-name').value='';
+  setTimeout(loadMembers, 1000);
+}
+async function rmM(name){
+  await gasPost({action:'deleteMember',name:name});
+  setTimeout(loadMembers, 1000);
+}
+
+function getCounts(){const today=new Date();today.setHours(0,0,0,0);return{all:tasks.length,overdue:tasks.filter(t=>!t.done&&new Date(t.date)<today).length,pending:tasks.filter(t=>!t.done&&t.status==='pending'&&new Date(t.date)>=today).length,inprogress:tasks.filter(t=>!t.done&&t.status==='inprogress').length,needfix:tasks.filter(t=>!t.done&&t.status==='needfix').length,done:tasks.filter(t=>t.done).length};}
+function filterTasks(f){currentFilter=f;const cfg2=filterCfg[f];document.getElementById('list-title').textContent=cfg2.title;Object.keys(filterCfg).forEach(k=>{const btn=document.getElementById('f-'+k);const c=filterCfg[k];if(k===f){btn.style.border='3px solid '+c.border;btn.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';}else{btn.style.border='2px solid '+c.border;btn.style.boxShadow='none';}});renderTasks();}
+function renderTasks(){const today=new Date();today.setHours(0,0,0,0);let filtered=[...tasks];if(currentFilter==='overdue')filtered=filtered.filter(t=>!t.done&&new Date(t.date)<today);else if(currentFilter==='pending')filtered=filtered.filter(t=>!t.done&&t.status==='pending'&&new Date(t.date)>=today);else if(currentFilter==='inprogress')filtered=filtered.filter(t=>!t.done&&t.status==='inprogress');else if(currentFilter==='needfix')filtered=filtered.filter(t=>!t.done&&t.status==='needfix');else if(currentFilter==='done')filtered=filtered.filter(t=>t.done);const sorted=filtered.sort((a,b)=>a.done!==b.done?a.done?1:-1:new Date(a.date)-new Date(b.date));const el=document.getElementById('task-list');if(!sorted.length){el.innerHTML='<div class="empty">ไม่มีงานในหมวดนี้ค่ะ</div>';updCounts();return;}el.innerHTML=sorted.map(t=>{const sv=st(t.date,t.done);let bc=sv.bc,bl=sv.bl;if(!t.done&&t.status==='inprogress'&&sv.cls!=='bd-overdue'){bc='#ede0ff';bl='#a855f7';}else if(!t.done&&t.status==='needfix'&&sv.cls!=='bd-overdue'){bc='#fef3c7';bl='#f59e0b';}return'<div class="task-card" style="border-color:'+bc+';border-left-color:'+bl+'"><div class="task-top"><input type="checkbox" class="task-cb" '+(t.done?'checked':'')+' onchange="toggleDone('+t.id+')" style="accent-color:'+bl+'"><div class="task-body"><div class="task-name '+(t.done?'done':'')+'">'+t.name+'<span class="badge '+sv.cls+'">'+sv.lbl+'</span>'+(!t.done?statusLabel(t.status):'')+'</div><div class="task-meta">👤 '+(t.assign||'ยังไม่ระบุ')+' &nbsp;📅 '+fmt(t.date)+(t.note?' &nbsp;💬 '+t.note:'')+'</div></div><div class="task-acts"><select onchange="changeStatus('+t.id+',this.value)" style="font-size:12px;border:2px solid #e9e0f8;border-radius:8px;padding:4px 6px;background:#faf8ff;font-family:\'Sarabun\',sans-serif;cursor:pointer"><option value="pending" '+(t.status==='pending'?'selected':'')+'>⏳</option><option value="inprogress" '+(t.status==='inprogress'?'selected':'')+'>⛏️</option><option value="needfix" '+(t.status==='needfix'?'selected':'')+'>⚠️</option></select><button class="icon-btn" onclick="quickN('+t.id+')" title="แจ้งเตือน LINE" style="color:#06C755;border-color:#a7f3d0">💬</button><button class="icon-btn" onclick="delTask('+t.id+')" title="ลบ" style="color:#ef4444;border-color:#fecaca">🗑</button></div></div></div>';}).join('');updCounts();}
+function updCounts(){const c=getCounts();document.getElementById('fc-all').textContent=c.all+' งาน';document.getElementById('fc-overdue').textContent=c.overdue+' งาน';document.getElementById('fc-pending').textContent=c.pending+' งาน';document.getElementById('fc-inprogress').textContent=c.inprogress+' งาน';document.getElementById('fc-needfix').textContent=c.needfix+' งาน';document.getElementById('fc-done').textContent=c.done+' งาน';}
+
+async function changeStatus(id,val){
+  const t=tasks.find(x=>x.id===id);
+  if(t){t.status=val;renderTasks();await gasPost({action:'updateTask',id:id,status:val});}
+}
+async function addTask(){
+  const name=document.getElementById('nt-name').value.trim(),date=document.getElementById('nt-date').value;
+  if(!name||!date){alert('กรุณาใส่ชื่องานและวันส่งด้วยนะคะ');return;}
+  const assignList=[...selectedAssign];
+  const note=document.getElementById('nt-note').value.trim();
+  const status=document.getElementById('nt-status').value;
+  if(assignList.length===0){
+    const t={id:nid++,name,assign:'',date,note,done:false,status};
+    tasks.push(t);renderTasks();saveNid();
+    await gasPost({action:'addTask',id:t.id,name,assign:'',date,note,done:'false',status});
+  } else {
+    for(const m of assignList){
+      const t={id:nid++,name,assign:m,date,note,done:false,status};
+      tasks.push(t);saveNid();
+      await gasPost({action:'addTask',id:t.id,name,assign:m,date,note,done:'false',status});
+    }
+    renderTasks();
+  }
+  document.getElementById('nt-name').value='';document.getElementById('nt-note').value='';
+  selectedAssign.clear();renderAssignList();
+}
+async function toggleDone(id){
+  const t=tasks.find(x=>x.id===id);
+  if(t){t.done=!t.done;if(t.done)t.status='pending';renderTasks();await gasPost({action:'updateTask',id:id,done:String(t.done),status:t.status});}
+}
+async function delTask(id){
+  if(confirm('ลบงานนี้ใช่ไหมคะ?')){
+    tasks=tasks.filter(t=>t.id!==id);renderTasks();
+    await gasPost({action:'deleteTask',id:id});
+  }
+}
+function renderSel(){sel=new Set();const pending=tasks.filter(t=>!t.done).sort((a,b)=>new Date(a.date)-new Date(b.date));const el=document.getElementById('sel-list');if(!pending.length){el.innerHTML='<div class="empty">ไม่มีงานค้างค่ะ</div>';updSelBar();return;}el.innerHTML=pending.map(t=>{const sv=st(t.date,false);return'<div class="task-sel" id="ts-'+t.id+'" onclick="togSel('+t.id+')"><div class="sel-box" id="sb-'+t.id+'"></div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:700;color:#1a1a2e;display:flex;align-items:center;gap:6px;flex-wrap:wrap">'+t.name+'<span class="badge '+sv.cls+'">'+sv.lbl+'</span>'+statusLabel(t.status)+'</div><div style="font-size:12px;font-weight:600;color:#8b6ab0;margin-top:3px">👤 '+(t.assign||'ยังไม่ระบุ')+' 📅 '+fmt(t.date)+'</div></div></div>';}).join('');updSelBar();document.getElementById('preview-area').style.display='none';document.getElementById('notify-result').style.display='none';}
+function togSel(id){if(sel.has(id)){sel.delete(id);document.getElementById('ts-'+id).classList.remove('on');document.getElementById('sb-'+id).textContent='';}else{sel.add(id);document.getElementById('ts-'+id).classList.add('on');document.getElementById('sb-'+id).textContent='✓';}updSelBar();}
+function selectAll(){tasks.filter(t=>!t.done).forEach(t=>{sel.add(t.id);const el=document.getElementById('ts-'+t.id),sb=document.getElementById('sb-'+t.id);if(el)el.classList.add('on');if(sb)sb.textContent='✓';});updSelBar();}
+function selectNone(){sel.forEach(id=>{const el=document.getElementById('ts-'+id),sb=document.getElementById('sb-'+id);if(el)el.classList.remove('on');if(sb)sb.textContent='';});sel.clear();updSelBar();}
+function updSelBar(){const bar=document.getElementById('sel-bar'),ext=document.getElementById('extra-row');if(sel.size>0){bar.style.display='flex';ext.style.display='block';document.getElementById('sel-count').textContent='เลือกแล้ว '+sel.size+' งาน';}else{bar.style.display='none';ext.style.display='none';}}
+function buildMsg(t,extra){const who=t.assign?'@'+t.assign:'ทีมงาน';const today=new Date();today.setHours(0,0,0,0);const due=new Date(t.date);const diff=Math.round((due-today)/86400000);const isOverdue=diff<0,isToday=diff===0,isUrgent=diff<=2&&diff>=0;let sep,header,urgencyLine,footer;if(isOverdue){sep='🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴';header='🆘🆘 เกินกำหนดแล้ว!! 🆘🆘';urgencyLine='💢 เลยกำหนดมา '+Math.abs(diff)+' วันแล้ว!!\n⛔️ ต้องส่งทันที!!';footer='‼️‼️ กรุณาส่งโดยด่วนที่สุดค่ะ!! ‼️‼️';}else if(isToday){sep='🟠🟠🟠🟠🟠🟠🟠🟠🟠🟠';header='🚨🚨 ครบกำหนดวันนี้!! 🚨🚨';urgencyLine='⚡️ ต้องส่งภายในวันนี้เลยค่ะ!!\n🔔 อย่าลืมเด็ดขาด!!';footer='‼️ กรุณาส่งภายในวันนี้นะคะ!! ‼️';}else if(isUrgent){sep='🟡🟡🟡🟡🟡🟡🟡🟡🟡🟡';header='⚠️⚠️ ใกล้ครบกำหนดแล้ว!! ⚠️⚠️';urgencyLine='⏳ เหลืออีกแค่ '+diff+' วันเท่านั้น!!\n👀 รีบดำเนินการด้วยนะคะ!';footer='❗️ กรุณาเร่งดำเนินการด้วยนะคะ!';}else{sep='🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢';header='📋 แจ้งเตือนงาน';urgencyLine='📅 กำหนดส่ง: '+fmt(t.date)+'\n✅ ยังมีเวลา อีก '+diff+' วันค่ะ';footer='✅ กรุณาส่งภายในกำหนดด้วยนะคะ';}let statusLine='';if(t.status==='inprogress')statusLine='⛏️ สถานะ: กำลังดำเนินการ';else if(t.status==='needfix')statusLine='⚠️ สถานะ: ต้องแก้ไขด่วน!!';else statusLine='📌 สถานะ: รอดำเนินการ';return[sep,header,sep,'','👤 เรียน '+who,'📚 งาน: "'+t.name+'"','',urgencyLine,'',statusLine,t.note?'💬 '+t.note:'',extra?'📝 '+extra:'','',footer,sep].filter(Boolean).join('\n');}
+function buildSelMsg(){const selected=tasks.filter(t=>sel.has(t.id)),extra=document.getElementById('nn-extra').value.trim(),grp=cfg.groupName||'ER Team';if(selected.length===1)return buildMsg(selected[0],extra);const today=new Date();today.setHours(0,0,0,0);const overdueList=selected.filter(t=>new Date(t.date)<today);const urgentList=selected.filter(t=>{const d=new Date(t.date);const diff=Math.round((d-today)/86400000);return diff>=0&&diff<=2;});const normalList=selected.filter(t=>{const diff=Math.round((new Date(t.date)-today)/86400000);return diff>2;});const lines=['🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴','🆘 สรุปงานค้าง - '+grp+' 🆘','🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴',''];if(overdueList.length>0){lines.push('🆘🆘 เกินกำหนดแล้ว!! '+overdueList.length+' งาน 🆘🆘');lines.push('⛔️⛔️⛔️⛔️⛔️⛔️⛔️⛔️');overdueList.forEach(t=>{const diff=Math.round((new Date(t.date)-today)/86400000);lines.push('🔴 '+t.name);lines.push('   👤 '+(t.assign?'@'+t.assign:'ยังไม่ระบุ'));lines.push('   💢 เกินกำหนดมา '+Math.abs(diff)+' วัน!!');if(t.note)lines.push('   💬 '+t.note);lines.push('');});}if(urgentList.length>0){lines.push('🟠🟠 ใกล้ครบกำหนด!! '+urgentList.length+' งาน 🟠🟠');lines.push('⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️');urgentList.forEach(t=>{const diff=Math.round((new Date(t.date)-today)/86400000);lines.push('🟡 '+t.name);lines.push('   👤 '+(t.assign?'@'+t.assign:'ยังไม่ระบุ'));lines.push('   ⏳ '+(diff===0?'ครบกำหนดวันนี้!!':'เหลืออีก '+diff+' วัน!!'));if(t.note)lines.push('   💬 '+t.note);lines.push('');});}if(normalList.length>0){lines.push('🟢🟢 งานที่ต้องดำเนินการ '+normalList.length+' งาน 🟢🟢');lines.push('✅✅✅✅✅✅✅✅');normalList.forEach(t=>{const diff=Math.round((new Date(t.date)-today)/86400000);lines.push('🟢 '+t.name);lines.push('   👤 '+(t.assign?'@'+t.assign:'ยังไม่ระบุ'));lines.push('   📅 กำหนดส่ง '+fmt(t.date)+' (อีก '+diff+' วัน)');if(t.note)lines.push('   💬 '+t.note);lines.push('');});}if(extra)lines.push('📝 '+extra+'\n');lines.push('‼️‼️ กรุณาดำเนินการตามกำหนดด้วยนะคะ ‼️‼️');lines.push('🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴');return lines.join('\n');}
+function previewSel(){if(!sel.size){alert('กรุณาเลือกงานก่อนนะคะ');return;}document.getElementById('p-msg').textContent=buildSelMsg();document.getElementById('preview-area').style.display='block';}
+function copyMsg(){navigator.clipboard.writeText(document.getElementById('p-msg').textContent).then(()=>alert('คัดลอกแล้วค่า! 🌸'));}
+
+async function sendViaGAS(msg, memberName, userId) {
+  const token = cfg.token || '';
+  const gId = cfg.groupId || '';
+  if(!gId){alert('กรุณาใส่ Group ID ในแท็บ "ตั้งค่า" ก่อนนะคะ');return false;}
+  try {
+    const to = userId || gId;
+    await gasPost({action:'sendLine', token:token, groupId:gId, userId:to, message:msg});
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+
+function showR(id,ok){const el=document.getElementById(id);el.style.display='block';if(ok){el.style.background='#f0fdf4';el.style.color='#065f46';el.textContent='✅ ส่งสำเร็จแล้วค่ะ! 🎉';}else{el.style.background='#fff5f5';el.style.color='#dc2626';el.textContent='❌ ส่งไม่สำเร็จ กรุณาตรวจสอบ Token และ Group ID อีกครั้งนะคะ';}}
+
+async function sendSel(){
+  if(!sel.size){alert('กรุณาเลือกงานก่อนนะคะ');return;}
+  const el=document.getElementById('notify-result');
+  el.style.display='block';el.style.background='#fef3c7';el.style.color='#92400e';el.textContent='กำลังส่ง...';
+  const selected=tasks.filter(t=>sel.has(t.id));
+  const extra=document.getElementById('nn-extra').value.trim();
+  const byAssign={};
+  selected.forEach(t=>{const key=t.assign||'__no_assign__';if(!byAssign[key])byAssign[key]=[];byAssign[key].push(t);});
+  const memberMap=cfg.memberMap||{};
+  for(const [assign,taskList] of Object.entries(byAssign)){
+    const memberName=(assign==='__no_assign__')?null:assign;
+    const userId=memberName?memberMap[memberName]:null;
+    let msg;
+    if(taskList.length===1){msg=buildMsg(taskList[0],extra);}
+    else{
+      const today=new Date();today.setHours(0,0,0,0);
+      const who=memberName?'@'+memberName:'ทีมงาน';
+      const lines=['🟠🟠🟠🟠🟠🟠🟠🟠🟠🟠','📋 แจ้งเตือนงานหลายรายการ','🟠🟠🟠🟠🟠🟠🟠🟠🟠🟠','','👤 เรียน '+who,''];
+      taskList.forEach(t=>{const diff=Math.round((new Date(t.date)-today)/86400000);const urgency=diff<0?'🔴 เกินกำหนด '+Math.abs(diff)+' วัน!':diff===0?'🔥 วันนี้!':'📅 อีก '+diff+' วัน';lines.push('📚 '+t.name+' ('+urgency+')');if(t.note)lines.push('   💬 '+t.note);});
+      if(extra)lines.push('','📝 '+extra);
+      lines.push('','‼️ กรุณาดำเนินการตามกำหนดด้วยนะคะ','🟠🟠🟠🟠🟠🟠🟠🟠🟠🟠');
+      msg=lines.join('\n');
+    }
+    await sendViaGAS(msg, memberName, userId);
+  }
+  el.style.background='#f0fdf4';el.style.color='#065f46';el.textContent='✅ ส่งแล้วค่ะ! 🎉';
+}
+
+function quickN(id){goTab('notify',document.querySelectorAll('.nav-btn')[2]);setTimeout(()=>{togSel(id);previewSel();},100);}
+function toggleShow(id,btn){const inp=document.getElementById(id);if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}else{inp.type='password';btn.textContent='👁';}}
+function saveCfg(){cfg.token=document.getElementById('cfg-token').value.trim();cfg.groupId=document.getElementById('cfg-groupid').value.trim();cfg.gasUrl=document.getElementById('cfg-gasurl').value.trim()||DEFAULT_GAS;cfg.groupName=document.getElementById('cfg-group').value.trim();saveCfgLocal();updStatus();const el=document.getElementById('test-result');el.style.display='block';el.style.background='#f0fdf4';el.style.color='#065f46';el.textContent='บันทึกแล้วค่ะ! 🌸';loadMembers();}
+
+async function testSend(){
+  cfg.token=document.getElementById('cfg-token').value.trim();
+  cfg.groupId=document.getElementById('cfg-groupid').value.trim();
+  cfg.gasUrl=document.getElementById('cfg-gasurl').value.trim()||DEFAULT_GAS;
+  if(!cfg.token||!cfg.groupId){alert('กรุณากรอก Token และ Group ID ก่อนนะคะ');return;}
+  const el=document.getElementById('test-result');
+  el.style.display='block';el.style.background='#fef3c7';el.style.color='#92400e';el.textContent='กำลังส่งทดสอบ...';
+  await gasPost({action:'sendLine',token:cfg.token,groupId:cfg.groupId,userId:cfg.groupId,message:'🏥 ER Project - ทดสอบการเชื่อมต่อสำเร็จแล้วค่ะ! ✅'});
+  el.style.background='#f0fdf4';el.style.color='#065f46';el.textContent='ส่งแล้วค่ะ! ✅ ตรวจสอบในกลุ่ม LINE ด้วยนะคะ';
+  saveCfgLocal();updStatus();
+}
+
+function clearAll(){if(confirm('ต้องการล้างข้อมูลทั้งหมดใช่ไหมคะ?')){tasks=[];members=[];nid=1;cfg={};localStorage.clear();renderTasks();renderMembers();updStatus();}}
+
+updStatus();
+document.getElementById('nt-date').value=df(3);
+document.getElementById('cfg-gasurl').value=cfg.gasUrl||DEFAULT_GAS;
+Object.keys(filterCfg).forEach(k=>{const btn=document.getElementById('f-'+k);if(btn){const c=filterCfg[k];btn.style.border='2px solid '+c.border;btn.style.boxShadow='none';}});
+const allBtn=document.getElementById('f-all');
+if(allBtn){allBtn.style.border='3px solid '+filterCfg.all.border;allBtn.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';}
+document.getElementById('list-title').textContent=filterCfg.all.title;
+updCounts();
+loadAll();
+</script>
+</body>
+</html>
